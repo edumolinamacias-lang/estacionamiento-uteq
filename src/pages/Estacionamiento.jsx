@@ -1,86 +1,82 @@
-import { useMemo, useState } from 'react';
-import { useEspacios } from '../hooks/useEspacios.jsx';
-import ResumenEstacionamiento from '../components/ResumenEstacionamiento.jsx';
-import CuadriculaEstacionamiento from '../components/CuadriculaEstacionamiento.jsx';
-import FiltrosEspacios from '../components/FiltrosEspacios.jsx';
-import MapaEstacionamiento from '../components/MapaEstacionamiento.jsx';
-import PanelSensor from '../components/PanelSensor.jsx';
-import './Estacionamiento.css';
+import React from 'react';
+import { ref, update } from "firebase/database";
+import { db } from "../firebaseConfig"; // Ajusta la ruta de tu configuración de Firebase si es necesario
 
-export default function Estacionamiento() {
-  const { espacios, cargando, reiniciando, error, resumen, reiniciarSimulacion } = useEspacios({
-    simular: true,
-    intervaloMs: 6000,
-  });
-  const [filtros, setFiltros] = useState({ columna: 'todas', estado: 'todos' });
-  const [confirmacion, setConfirmacion] = useState('');
-  const [seleccionadoId, setSeleccionadoId] = useState(null);
+export default function Estacionamiento({ selectedSensor, ...otrosProps }) {
 
-  const espaciosFiltrados = useMemo(() => {
-    return espacios.filter((e) => {
-      const pasaColumna = filtros.columna === 'todas' || String(e.columna) === filtros.columna;
-      const pasaEstado = filtros.estado === 'todos' || e.estado === filtros.estado;
-      return pasaColumna && pasaEstado;
-    });
-  }, [espacios, filtros]);
+  // Función para simular el cambio de estado del sensor seleccionado individualmente
+  const handleSimulateChange = async () => {
+    if (!selectedSensor) return;
 
-  // El espacio seleccionado se busca en `espacios` (no en el filtrado) para
-  // que el panel siga mostrando datos en vivo aunque el filtro lo oculte.
-  const espacioSeleccionado = espacios.find((e) => e.id === seleccionadoId) ?? null;
+    // Si la distancia actual es mayor a 50cm (libre), lo pasamos a 25cm (ocupado). 
+    // Si es menor o igual a 50cm (ocupado), lo pasamos a 150cm (libre).
+    const nuevaDistancia = selectedSensor.distance > 50 ? 25 : 150;
 
-  async function manejarReinicio() {
-    setConfirmacion('');
     try {
-      await reiniciarSimulacion();
-      setConfirmacion('Simulación reiniciada ✓');
-    } catch {
-      setConfirmacion('No se pudo reiniciar. Revisa la consola.');
-    } finally {
-      setTimeout(() => setConfirmacion(''), 3000);
+      const sensorRef = ref(db, `parking/${selectedSensor.id}`);
+      await update(sensorRef, {
+        distance: nuevaDistancia,
+        lastUpdated: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error("Error al simular el cambio de estado:", error);
     }
-  }
+  };
 
   return (
-    <div className="estacionamiento">
-      <div className="estacionamiento__header">
-        <div>
-          <h1>Estacionamiento UTEQ</h1>
-          <p className="estacionamiento__sub mono">
-            Actualización en tiempo real vía Firebase Realtime Database
-          </p>
-        </div>
-        <div className="estacionamiento__reset-grupo">
-          {confirmacion && <span className="estacionamiento__confirmacion mono">{confirmacion}</span>}
-          <button className="estacionamiento__reset" onClick={manejarReinicio} disabled={reiniciando}>
-            {reiniciando ? 'Reiniciando…' : 'Reiniciar simulación'}
+    <div className="estacionamiento-container">
+      {/* ... Aquí va el resto de tu estructura principal (grilla de los 80 espacios, métricas, etc.) ... */}
+
+      {/* Panel lateral derecho de detalles del sensor seleccionado */}
+      {selectedSensor && (
+        <div className="panel-lateral-detalles">
+          <h3>SENSor SELECCIONADO</h3>
+          <div className="sensor-header-info">
+            <span className="sensor-id-title">{selectedSensor.id}</span>
+            <span className={`badge-estado ${selectedSensor.distance <= 50 ? 'ocupado' : 'libre'}`}>
+              {selectedSensor.distance <= 50 ? 'OCUPADO' : 'LIBRE'}
+            </span>
+          </div>
+
+          <div className="distancia-card">
+            <span className="distancia-label">Distancia detectada</span>
+            <div className="distancia-valor">{selectedSensor.distance} <span>cm</span></div>
+            <div className="barra-progreso">
+              <div 
+                className="progreso-relleno" 
+                style={{ width: `${Math.min((selectedSensor.distance / 300) * 100, 100)}%` }}
+              ></div>
+            </div>
+            <span className="umbral-label">Umbral del sensor: 50 cm</span>
+          </div>
+
+          <div className="detalles-tecnicos">
+            <p><strong>ID RTDB:</strong> parking_{selectedSensor.id}</p>
+            <p><strong>COLUMNA / NÚMERO:</strong> {selectedSensor.column} / {selectedSensor.number}</p>
+            <p><strong>ÚLTIMA ACTUALIZACIÓN:</strong> {new Date(selectedSensor.lastUpdated).toLocaleTimeString()}</p>
+          </div>
+
+          <div className="historial-seccion">
+            <h4>Historial reciente</h4>
+            {/* Listado de historial de eventos recientes */}
+            <div className="historial-lista">
+              {/* Ejemplo de elementos del historial simulados o reales */}
+              <div className="historial-item">
+                <span>{selectedSensor.distance <= 50 ? 'Ocupado' : 'Libre'}</span>
+                <span>{selectedSensor.distance} cm</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Botón para simular el cambio de estado individual */}
+          <button 
+            className="btn-simular-individual" 
+            onClick={handleSimulateChange}
+          >
+            Simular cambio de estado
           </button>
         </div>
-      </div>
-
-      {error && <p className="estacionamiento__error">Error: {error.message}</p>}
-
-      <ResumenEstacionamiento resumen={resumen} />
-
-      <FiltrosEspacios filtros={filtros} onCambiar={setFiltros} />
-
-      <div className="estacionamiento__layout">
-        {cargando ? (
-          <p className="estacionamiento__cargando mono">Sembrando y sincronizando los 80 sensores…</p>
-        ) : (
-          <CuadriculaEstacionamiento
-            espacios={espaciosFiltrados}
-            seleccionadoId={seleccionadoId}
-            onSeleccionar={(espacio) => setSeleccionadoId(espacio.id)}
-          />
-        )}
-
-        <PanelSensor espacio={espacioSeleccionado} onCerrar={() => setSeleccionadoId(null)} />
-      </div>
-
-      <section className="estacionamiento__mapa-seccion">
-        <h2>Ubicación del parqueadero</h2>
-        <MapaEstacionamiento />
-      </section>
+      )}
     </div>
   );
 }
