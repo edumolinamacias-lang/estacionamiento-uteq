@@ -1,0 +1,18 @@
+.estacionamiento-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+  padding: 20px;
+}
+
+@media (max-width: 1024px) {
+  .estacionamiento-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cuadricula-columnas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}

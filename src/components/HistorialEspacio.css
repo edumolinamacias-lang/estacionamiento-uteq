@@ -1,0 +1,56 @@
+.historial {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.historial__estado {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.historial__grafico {
+  background: var(--bg-base);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  padding: 12px;
+}
+
+.historial__tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+
+.historial__tabla th {
+  text-align: left;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 10px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.historial__tabla td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--line-soft);
+  color: var(--text-secondary);
+}
+
+.historial__badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.historial__badge--libre {
+  background: var(--libre-dim);
+  color: var(--libre);
+}
+
+.historial__badge--ocupado {
+  background: var(--ocupado-dim);
+  color: var(--ocupado);
+}
