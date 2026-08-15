@@ -93,7 +93,8 @@ src/
 │   ├── EspacioCard.jsx              # Tarjeta individual de un espacio
 │   ├── FiltrosEspacios.jsx          # Filtros por columna/estado + leyenda
 │   ├── HistorialEspacio.jsx         # Tabla + gráfico del historial
-│   └── MapaEstacionamiento.jsx      # Mapa Leaflet con el perímetro GPS real
+│   ├── MapaEstacionamiento.jsx      # Mapa Leaflet con el perímetro GPS real
+│   └── PanelSensor.jsx              # (extra) vista rápida del espacio seleccionado, sin navegar
 ├── hooks/
 │   ├── useEspacios.jsx              # Suscripción RTDB + ciclo de simulación
 │   └── useHistorialEspacio.jsx      # Suscripción al historial de un espacio
@@ -109,6 +110,15 @@ src/
 ├── App.jsx
 └── main.jsx
 ```
+
+> `PanelSensor.jsx` no está en la lista de componentes sugeridos del enunciado
+> original: es un agregado. Al hacer clic en un espacio de la cuadrícula, se
+> resalta y se muestra un resumen rápido (distancia, últimas 5 lecturas) en
+> este panel lateral **sin cambiar de página**; desde ahí, un botón "Ver
+> detalle completo" lleva a la página `/espacios/:id` que sí pide la
+> actividad. Los seis componentes originales (Resumen, Cuadrícula,
+> EspacioCard, Filtros, Historial, Mapa) siguen siendo los que cubren cada
+> requerimiento del enunciado punto por punto.
 
 ## 6. Cálculo de la distribución de los 80 espacios
 
