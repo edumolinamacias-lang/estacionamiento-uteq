@@ -42,27 +42,27 @@ export default function Estacionamiento() {
     }
   }
 
-  // Función para simular el cambio de estado individual del sensor seleccionado
+  // Función corregida para simular el cambio de estado individual apuntando a 'espacios'
   async function manejarSimulacionIndividual() {
     if (!espacioSeleccionado) {
       console.log("No hay ningún espacio seleccionado.");
       return;
     }
     
-    // Evaluamos la distancia actual detectada (si es mayor a 50 pasa a 25 [ocupado], si no a 150 [libre])
-    const distanciaActual = espacioSeleccionado.distanciaDetectada ?? 100;
+    // Si la distancia detectada actual es mayor a 50, pasa a 25 (ocupado); si no, a 150 (libre)
+    const distanciaActual = espacioSeleccionado.distanciaDetectada ?? 150;
     const nuevaDistancia = distanciaActual > 50 ? 25 : 150;
-
-    console.log(`Intentando actualizar sensor ${espacioSeleccionado.id} con distancia: ${nuevaDistancia}`);
+    const nuevoEstado = nuevaDistancia <= 50 ? 'ocupado' : 'libre';
 
     try {
-      // Ruta en Firebase Realtime Database para cada espacio
-      const sensorRef = ref(db, `parking/${espacioSeleccionado.id}`);
+      // Ruta corregida al nodo raíz 'espacios' con los campos exactos de Firebase
+      const sensorRef = ref(db, `espacios/${espacioSeleccionado.id}`);
       await update(sensorRef, {
-        distance: nuevaDistancia,
-        lastUpdated: new Date().toISOString()
+        distanciaDetectada: nuevaDistancia,
+        estado: nuevoEstado,
+        fechaHora: Date.now()
       });
-      console.log("¡Actualización en Firebase exitosa!");
+      console.log(`¡Sensor ${espacioSeleccionado.id} actualizado correctamente a ${nuevaDistancia} cm (${nuevoEstado})!`);
     } catch (error) {
       console.error("Error al simular el cambio de estado individual:", error);
     }
