@@ -18,7 +18,7 @@ const ESTADO_LABEL = { libre: 'Libre', ocupado: 'Ocupado' };
  * Vista rápida (sin navegar) del espacio seleccionado en la cuadrícula.
  * Complementa la página de detalle /espacios/:id — no la reemplaza.
  */
-export default function PanelSensor({ espacio, onCerrar }) {
+export default function PanelSensor({ espacio, onCerrar, onSimularCambio }) {
   const { historial } = useHistorialEspacio(espacio?.id, 5);
 
   if (!espacio) {
@@ -88,6 +88,15 @@ export default function PanelSensor({ espacio, onCerrar }) {
           </ul>
         )}
       </div>
+
+      {/* Botón para simular el cambio de estado individualmente */}
+      <button 
+        className="estacionamiento__reset" 
+        onClick={onSimularCambio}
+        style={{ width: '100%', marginBottom: '10px', marginTop: '10px', cursor: 'pointer' }}
+      >
+        Simular cambio de estado
+      </button>
 
       <Link to={`/espacios/${espacio.id}`} className="panel-sensor__cta">
         Ver detalle completo →
