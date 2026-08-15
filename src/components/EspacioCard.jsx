@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router-dom';
 import './EspacioCard.css';
 
 function formatHora(ts) {
@@ -11,19 +10,17 @@ const ESTADO_LABEL = {
   ocupado: 'Ocupado',
 };
 
-export default function EspacioCard({ espacio, onSeleccionar }) {
-  const navigate = useNavigate();
+export default function EspacioCard({ espacio, seleccionado, onSeleccionar }) {
   const estado = espacio?.estado ?? 'sin-info';
   const label = ESTADO_LABEL[estado] ?? 'Sin datos';
 
   function manejarClick() {
     if (onSeleccionar) onSeleccionar(espacio);
-    navigate(`/espacios/${espacio.id}`);
   }
 
   return (
     <button
-      className={`espacio-card espacio-card--${estado}`}
+      className={`espacio-card espacio-card--${estado} ${seleccionado ? 'espacio-card--seleccionado' : ''}`}
       onClick={manejarClick}
       title={`${espacio.id} · ${label}`}
     >

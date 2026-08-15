@@ -4,6 +4,7 @@ import ResumenEstacionamiento from '../components/ResumenEstacionamiento.jsx';
 import CuadriculaEstacionamiento from '../components/CuadriculaEstacionamiento.jsx';
 import FiltrosEspacios from '../components/FiltrosEspacios.jsx';
 import MapaEstacionamiento from '../components/MapaEstacionamiento.jsx';
+import PanelSensor from '../components/PanelSensor.jsx';
 import './Estacionamiento.css';
 
 export default function Estacionamiento() {
@@ -13,6 +14,7 @@ export default function Estacionamiento() {
   });
   const [filtros, setFiltros] = useState({ columna: 'todas', estado: 'todos' });
   const [confirmacion, setConfirmacion] = useState('');
+  const [seleccionadoId, setSeleccionadoId] = useState(null);
 
   const espaciosFiltrados = useMemo(() => {
     return espacios.filter((e) => {
@@ -21,6 +23,10 @@ export default function Estacionamiento() {
       return pasaColumna && pasaEstado;
     });
   }, [espacios, filtros]);
+
+  // El espacio seleccionado se busca en `espacios` (no en el filtrado) para
+  // que el panel siga mostrando datos en vivo aunque el filtro lo oculte.
+  const espacioSeleccionado = espacios.find((e) => e.id === seleccionadoId) ?? null;
 
   async function manejarReinicio() {
     setConfirmacion('');
@@ -57,11 +63,19 @@ export default function Estacionamiento() {
 
       <FiltrosEspacios filtros={filtros} onCambiar={setFiltros} />
 
-      {cargando ? (
-        <p className="estacionamiento__cargando mono">Sembrando y sincronizando los 80 sensores…</p>
-      ) : (
-        <CuadriculaEstacionamiento espacios={espaciosFiltrados} />
-      )}
+      <div className="estacionamiento__layout">
+        {cargando ? (
+          <p className="estacionamiento__cargando mono">Sembrando y sincronizando los 80 sensores…</p>
+        ) : (
+          <CuadriculaEstacionamiento
+            espacios={espaciosFiltrados}
+            seleccionadoId={seleccionadoId}
+            onSeleccionar={(espacio) => setSeleccionadoId(espacio.id)}
+          />
+        )}
+
+        <PanelSensor espacio={espacioSeleccionado} onCerrar={() => setSeleccionadoId(null)} />
+      </div>
 
       <section className="estacionamiento__mapa-seccion">
         <h2>Ubicación del parqueadero</h2>

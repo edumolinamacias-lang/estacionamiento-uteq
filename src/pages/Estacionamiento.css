@@ -86,3 +86,16 @@
   margin-bottom: 14px;
   color: var(--text-primary);
 }
+
+.estacionamiento__layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 18px;
+  align-items: start;
+}
+
+@media (max-width: 1080px) {
+  .estacionamiento__layout {
+    grid-template-columns: 1fr;
+  }
+}

@@ -16,6 +16,12 @@
   border-color: currentColor;
 }
 
+.espacio-card--seleccionado {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
 .espacio-card__icono {
   flex-shrink: 0;
   width: 28px;
