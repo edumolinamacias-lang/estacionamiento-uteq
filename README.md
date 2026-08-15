@@ -83,7 +83,21 @@ una nueva lectura para un subconjunto aleatorio de sensores.
 | `npm run build` | Compila la app de producción a `dist/` |
 | `npm run preview` | Sirve localmente el build de producción |
 
-## 5. Estructura del proyecto
+## 5. Características principales
+
+✨ **Simulación en tiempo real**: Los sensores actualizan el estado de las plazas cada 6 segundos.
+
+📊 **Panel de estadísticas**: Visualiza el resumen del estacionamiento (ocupadas, libres, porcentaje).
+
+🗺️ **Mapa interactivo**: Geolocalización de cada plaza dentro del perímetro real del terreno UTEQ.
+
+📈 **Historial y gráficos**: Análisis de ocupación por espacio con visualización de tendencias.
+
+🔍 **Filtros avanzados**: Filtra por columna, estado (libre/ocupado) y visualiza la leyenda.
+
+🚗 **Detalle de espacios**: Información completa de cada plaza incluyendo últimas lecturas de sensores.
+
+## 6. Estructura del proyecto
 
 ```
 src/
@@ -120,7 +134,7 @@ src/
 > EspacioCard, Filtros, Historial, Mapa) siguen siendo los que cubren cada
 > requerimiento del enunciado punto por punto.
 
-## 6. Cálculo de la distribución de los 80 espacios
+## 7. Cálculo de la distribución de los 80 espacios
 
 El terreno está delimitado por 4 vértices GPS (ver `src/utils/constantes.js`,
 `VERTICES`). A partir de ellos:
@@ -141,7 +155,7 @@ lo que da el bounding box y el centro (latitud/longitud) de cada una de las
 80 plazas, usados tanto para guardar el registro en Firebase como para
 dibujar el mapa.
 
-## 7. Reglas de la simulación
+## 8. Reglas de la simulación
 
 - Cada sensor reporta una `distanciaDetectada` en centímetros.
 - `distancia <= 50 cm` → `estado = "ocupado"`; en caso contrario, `"libre"`.
@@ -151,7 +165,7 @@ dibujar el mapa.
 - Cada actualización queda registrada en `historial/{id}/{timestamp}` para
   poder graficar la evolución de cada plaza.
 
-## 8. Despliegue / entregable en PDF
+## 9. Despliegue / entregable en PDF
 
 Para el entregable en PDF de la actividad, se recomienda:
 
@@ -162,3 +176,41 @@ Para el entregable en PDF de la actividad, se recomienda:
    consola de Firebase RTDB mostrando el árbol `espacios` / `historial`.
 3. Anexar el código fuente de páginas, componentes y hooks (este
    repositorio) junto con la URL del repositorio de GitHub.
+
+## 10. Cómo usar la aplicación
+
+### Página de Inicio
+- Descripción general del proyecto y sistema de estacionamiento inteligente
+- Acceso rápido a la sección de estacionamiento
+
+### Página de Estacionamiento
+- **Cuadrícula visual**: Visualiza los 80 espacios en una cuadrícula 4x20
+  - Verde: Espacio libre
+  - Rojo: Espacio ocupado
+- **Tarjetas de estadísticas**: Resumen rápido del estado general
+- **Filtros**: Filtra por columna específica o estado de ocupación
+- **Panel de sensor**: Click en cualquier espacio para ver detalles rápidos
+- **Mapa**: Vista geográfica de la ubicación del estacionamiento
+
+### Página de Detalle de Espacio
+- Información completa del espacio seleccionado
+- Historial de cambios de estado
+- Gráfico de ocupación en el tiempo
+- Últimas lecturas del sensor
+
+## 11. Notas técnicas
+
+- La base de datos Firebase se inicializa automáticamente en la primera carga
+- Cada espacio tiene su propio historial de cambios
+- Los datos se persisten en Firebase para análisis histórico
+- La simulación es continua y se ejecuta sin intervención del usuario
+- Los cambios se reflejan en tiempo real en todas las vistas
+
+## 12. Soporte y contribuciones
+
+Para reportar errores o sugerir mejoras, considera abrir un _issue_ en el repositorio de GitHub.
+
+---
+
+**Última actualización**: 2026-08-14  
+**Versión**: 1.0.0
